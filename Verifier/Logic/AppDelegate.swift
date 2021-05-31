@@ -15,6 +15,7 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     internal var window: UIWindow?
     private var lastForegroundActivity: Date?
+    private var blurView: UIVisualEffectView?
 
     @UBUserDefault(key: "isFirstLaunch", defaultValue: true)
     var isFirstLaunch: Bool
@@ -106,8 +107,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func applicationDidBecomeActive(_: UIApplication) {}
-
     private func willAppearAfterColdstart(_: UIApplication, coldStart _: Bool, backgroundTime _: TimeInterval) {
         // Logic for coldstart / background
         startForceUpdateCheck()
@@ -154,5 +153,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         UIPageControl.appearance().pageIndicatorTintColor = .cc_grey
         UIPageControl.appearance().currentPageIndicatorTintColor = .cc_black
+    }
+
+    // MARK: - Hide information on app switcher
+
+    func applicationDidBecomeActive(_: UIApplication) {
+        blurView?.removeFromSuperview()
+        blurView = nil
+    }
+
+    func applicationWillResignActive(_: UIApplication) {
+        blurView?.removeFromSuperview()
+
+        let bv = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        bv.frame = window?.frame ?? .zero
+        window?.addSubview(bv)
+
+        blurView = bv
     }
 }
